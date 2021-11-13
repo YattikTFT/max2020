@@ -1,0 +1,125 @@
+<div>
+
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    
+
+<div>
+    <input type="text" name="mark" id="mark"> марка автомобиля
+    <input type="text" name="model" id="model"> модель автомобиля
+    <input type="text" name="model" id="year"> год выпуска автомобиля
+    <input type="text" name="model" id="price"> цена автомобиля
+    <input type="text" name="photo" id="photo" value=""> фото автомобиля
+    <div onclick="countRabbits()">Клик</div>
+</div>
+
+<script>
+    //запрещаем асинхронные запросы
+    $.ajaxSetup({async: false})
+
+    
+    //если переменная создается вне функций то она будет видна в них
+    //если переменная создается внутри функции - то она видна только в ней
+    var data = [];
+
+    renderCars();
+
+    function renderCars() {
+         //отправляем запрос на эндпоинт получения данных
+        let json = $.get("http://localhost:8080/");
+
+        //достаем из ответа текст  - json
+        var responseText = json.responseText;
+
+        //парсим текст из json в массив ассоциативный
+        data = JSON.parse(responseText)
+        
+        //стираем тот html что уже был
+        document.querySelector("div").innerHTML = '';
+
+        //в цикле подставляем данные в верстку
+        for (var i = 0; i < data.length; i++) {
+            document.querySelector("div").innerHTML += `
+                <div class="card">
+                    <div>
+                        Марка : ${data[i].mark}
+                    </div>
+                    <div>
+                        Модель : ${data[i].model}   
+                    </div>
+                    <div>
+                        <img src="${data[i].photo}" >            
+                    </div>
+                    <div>
+                        год выпуска : ${data[i].year}
+                        </div>
+                        <div>
+                            цена : ${data[i].price}
+                            </div>
+                </div>    
+            `
+        }
+    }
+   
+    function countRabbits() {
+        var obj = {}
+
+        obj.mark = document.querySelector("#mark").value;
+        obj.model = document.querySelector("#model").value;
+        obj.year = document.querySelector("#year").value;
+        obj.price = document.querySelector("#price").value;
+        obj.photo = document.querySelector("#photo").value;
+        
+        data.push(obj)
+
+        var send = JSON.stringify(data);
+
+        $.get("http://localhost:8081/?data="+send);
+
+        renderCars();
+
+    }
+            
+
+
+    /*----------Код для отправки данных  в файл-----------*/
+
+
+    //собрать данные из формы в массив - новый элемент (авто)
+        //нужно создать поля под данные 
+
+        //найти значение введенно в каждое поле и записать это в переменные - это будут характеристики авто
+
+        //нужно создать пустой ассоциативный массив - это одно авто
+
+        //добавить в соответствующие ячейки этого пустого массива - положить туда переменные
+
+        //добавить этот массив ассоциативный к тем что у вас уже были в файле (вы получили их при запуске страницы)
+
+        //преобразовать массив всех машин в json 
+
+        //отправить этот json в качестве GET параметра data в эндпоинт save.go
+
+        //обновить страницу и увидеть ваше новое авто
+
+        
+    //ОБРАТИТЕ ВНИМАНИЕ - весь код по добавлению не должен выполняться сразу а должен 
+    //по нажатию на какой нибудь элемент на экране
+
+    //ПОЛЯ должны быть следующие  марка(mark)  модель(model)   фото(photo)
+
+    //базовый json с списком машин я положу в data.json
+
+
+</script>
+<style>
+    .card {
+        margin: 30px;
+        background-color: rgb(255, 60, 0);
+        width: 300px;
+        padding: 30px;
+    }   
+    img {
+        width: 100%;
+    }
+</style>
